@@ -169,7 +169,9 @@ router.get("/customer/profile", async (req, res) => {
 
     const { data: customer, error } = await supabase
       .from("customers")
-      .select("id, name, email, phone, address, email_verified")
+      .select(
+  "id, name, email, phone, address, email_verified, policies_accepted_at"
+)
       .eq("id", decoded.id)
       .maybeSingle();
 
@@ -177,7 +179,15 @@ router.get("/customer/profile", async (req, res) => {
       return res.status(404).json({ error: "Customer profile not found." });
     }
 
-    res.json(customer);
+    res.json({
+  id: customer.id,
+  name: customer.name,
+  email: customer.email,
+  phone: customer.phone,
+  address: customer.address,
+  emailVerified: customer.email_verified,
+  policiesAcceptedAt: customer.policies_accepted_at || null
+});
   } catch (err) {
     return res.status(401).json({ error: "Your session has expired. Please log in again." });
   }
@@ -217,7 +227,9 @@ router.put("/customer/profile", async (req, res) => {
         address: address ? address.trim() : ""
       })
       .eq("id", decoded.id)
-      .select("id, name, email, phone, address, email_verified")
+      .select(
+  "id, name, email, phone, address, email_verified, policies_accepted_at"
+)
       .single();
 
     if (error) {
@@ -225,7 +237,15 @@ router.put("/customer/profile", async (req, res) => {
       return res.status(500).json({ error: "Could not save your profile." });
     }
 
-    res.json(customer);
+    res.json({
+  id: customer.id,
+  name: customer.name,
+  email: customer.email,
+  phone: customer.phone,
+  address: customer.address,
+  emailVerified: customer.email_verified,
+  policiesAcceptedAt: customer.policies_accepted_at || null
+});
   } catch (err) {
     return res.status(401).json({ error: "Your session has expired. Please log in again." });
   }

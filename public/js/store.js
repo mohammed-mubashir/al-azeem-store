@@ -96,7 +96,12 @@ if (document.getElementById("loginForm")) {
       const password = document.getElementById("regPassword").value;
       const data = await api("/auth/customer/register", { method: "POST", body: JSON.stringify({ name, email, phone, address, password }) });
       setSession(data.token, data.name);
-      window.location.href = "/";
+
+if (data.policiesAcceptedAt) {
+  window.location.href = "/";
+} else {
+  window.location.href = "/agree.html";
+}
     } catch (err) {
       msg.textContent = err.message;
       msg.className = "form-msg error";
