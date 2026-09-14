@@ -963,11 +963,18 @@ if (document.getElementById("continueBtn")) {
     continueBtn.textContent = "Saving...";
 
     try {
-      await api("/auth/customer/accept-policies", {
-        method: "PATCH"
-      });
+      const data = await api("/auth/customer/accept-policies", {
+  method: "PATCH"
+});
 
-      window.location.href = "/";
+if (data.success) {
+  localStorage.setItem(
+    "policiesAcceptedAt",
+    data.policiesAcceptedAt
+  );
+
+  window.location.href = "/";
+}
     } catch (err) {
       console.error("Policy agreement error:", err);
 
@@ -999,15 +1006,19 @@ if (policyBackLink) {
     }
 
     try {
-      const profile = await api("/auth/customer/profile");
+  const profile = await api("/auth/customer/profile");
 
-      if (profile && profile.policiesAcceptedAt) {
-        window.location.href = "/";
-      } else {
-        window.location.href = "/agree.html";
-      }
-    } catch (err) {
-      window.location.href = "/agree.html";
-    }
+  const acceptedAt =
+    profile?.policiesAcceptedAt ||
+    localStorage.getItem("policiesAcceptedAt");
+
+  if (acceptedAt) {
+    window.location.href = "/";
+  } else {
+    window.location.href = "/agree.html";
+  }
+} catch (err) {
+  window.location.href = "/agree.html";
+}
   });
 }

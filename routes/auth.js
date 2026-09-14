@@ -178,7 +178,6 @@ router.get("/customer/profile", async (req, res) => {
     if (error || !customer) {
       return res.status(404).json({ error: "Customer profile not found." });
     }
-
     res.json({
   id: customer.id,
   name: customer.name,
