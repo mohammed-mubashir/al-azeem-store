@@ -47,6 +47,20 @@ It is deployed online using Vercel, with Supabase used for cloud data storage.
 - View low-stock products
 - Review customer feedback
 
+- ## 📸 Screenshots
+
+### Homepage
+![AL AZEEM Store HomePage](screenshots/homepage.png)
+
+### Footer
+![Footer](screenshots/footer.png)
+
+### Shopping Cart
+![Shopping Cart](screenshots/cart.png)
+
+### Admin Dashboard
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
 ## 🛠️ Technology Stack
 
 ### Frontend
