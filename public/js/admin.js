@@ -6,13 +6,47 @@ function setToken(t) { localStorage.setItem("aa_admin_token", t); }
 function clearToken() { localStorage.removeItem("aa_admin_token"); }
 
 async function api(path, options = {}) {
-  const headers = options.headers || {};
-  if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
+  const headers = { ...(options.headers || {}) };
+
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+
   const token = getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${API}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API}${path}`, {
+    ...options,
+    headers
+  });
+
+  const text = await res.text();
+
+  let data = {};
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { error: text };
+  }
+
+  if (!res.ok) {
+    console.error("API Error:", {
+      url: `${API}${path}`,
+      status: res.status,
+      response: data
+    });
+
+    throw new Error(
+      data.error ||
+      data.message ||
+      `Server error: ${res.status}`
+    );
+  }
+
   return data;
 }
 
