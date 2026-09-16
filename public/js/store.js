@@ -234,16 +234,7 @@ if (document.getElementById("productGrid")) {
                ${p.wholesalePrice ? `<div style="font-size:1em; margin-top:2px;"><span style="text-decoration:line-through;">${money(p.retailPrice)}</span> <small>retail / ${p.unit}</small></div>` : ''}
           </div>
           <div class="product-foot" style="margin-top:6px;">
-          ${p.unit === 'kg' && !/\d+\s*(kg|g)\b/i.test(p.name) ? `
-          <div class="field" style="margin-bottom:6px;">
-            <select class="weight-select" style="width:100%; padding:6px; border-radius:6px;">
-            <option value="0.1">100g</option>
-            <option value="0.25" selected>250g</option>
-            <option value="0.5">500g</option>
-            <option value="1">1kg</option>
-            </select>
-             </div>
-            ` : ''}
+          
             <div class="qty-stepper">
               <button type="button" class="qty-minus">−</button>
               <span class="qty-val">1</span>
@@ -260,23 +251,10 @@ if (document.getElementById("productGrid")) {
       card.querySelector(".qty-plus").addEventListener("click", () => {
         qtyVal.textContent = Math.min(p.stockQty, Number(qtyVal.textContent) + 1);
       });
-      if (p.unit === 'kg' && !/\d+\s*(kg|g)\b/i.test(p.name)) {
-  const weightSelect = card.querySelector('.weight-select');
-  const priceDiv = card.querySelector(`#price-${p.id}`);
-  const basePrice = p.wholesalePrice || p.retailPrice;
-  weightSelect.addEventListener('change', () => {
-    const frac = parseFloat(weightSelect.value);
-    priceDiv.innerHTML = `${money(basePrice * frac)}<br><small>for ${weightSelect.options[weightSelect.selectedIndex].text}</small>`;
-  });
-}
-      card.querySelector(".add-btn").addEventListener("click", () => {
-  const weightSelect = card.querySelector('.weight-select');
-  const frac = p.unit === 'kg' && weightSelect
-    ? parseFloat(weightSelect.value)
-    : 1;
-  addToCart(p, Number(qtyVal.textContent), frac);
+      
+     card.querySelector(".add-btn").addEventListener("click", () => {
+  addToCart(p, Number(qtyVal.textContent), 1);
   qtyVal.textContent = 1;
-  if (weightSelect) weightSelect.value = "0.25";
 });
       grid.appendChild(card);
     });
