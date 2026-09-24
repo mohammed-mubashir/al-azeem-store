@@ -220,7 +220,9 @@ async function loadFeedback() {
     fd.append("name", document.getElementById("sName").value.trim());
     fd.append("category", document.getElementById("sCategory").value.trim());
     fd.append("unit", document.getElementById("sUnit").value);
-    fd.append("stockQty", document.getElementById("sQty").value);
+fd.append("saleType", document.getElementById("sSaleType").value);
+fd.append("packageSize", document.getElementById("sPackageSize").value);
+fd.append("stockQty", document.getElementById("sQty").value);
     fd.append("costPrice", document.getElementById("sCost").value || 0);
     fd.append("retailPrice", document.getElementById("sRetail").value);
     fd.append("wholesalePrice", document.getElementById("sWholesale").value || document.getElementById("sRetail").value);

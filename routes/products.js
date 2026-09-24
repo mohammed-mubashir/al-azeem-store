@@ -36,6 +36,8 @@ function mapProduct(p) {
     name: p.name,
     category: p.category,
     unit: p.unit,
+    saleType: p.sale_type || "unit",
+    packageSize: Number(p.package_size || 1),
     costPrice: p.cost_price,
     retailPrice: p.retail_price,
     wholesalePrice: p.wholesale_price,
@@ -131,6 +133,9 @@ router.post("/", requireAdmin, upload.single("image"), async (req, res) => {
       name,
       category,
       unit,
+      sale_type: finalSaleType,
+      package_size:
+      finalPackageSize,
       cost_price: costPrice !== undefined ? Number(costPrice) : 0,
       retail_price: Number(retailPrice),
       wholesale_price: wholesalePrice !== undefined ? Number(wholesalePrice) : Number(retailPrice),

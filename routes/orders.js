@@ -47,22 +47,54 @@ router.post("/", requireCustomer, async (req, res) => {
     if (error || !product) return res.status(404).json({ error: "A product in your cart no longer exists." });
 
     const qty = Number(line.qty);
-    if (qty <= 0) return res.status(400).json({ error: `Invalid quantity for ${product.name}.` });
-    if (Number(product.stock_qty) < qty) {
-      return res.status(409).json({ error: `Only ${product.stock_qty} ${product.unit} of ${product.name} left in stock.` });
-    }
 
+if (qty <= 0) {
+  return res.status(400).json({
+    error: `Invalid quantity for ${product.name}.`
+  });
+}
+
+// For bag products, qty means number of bags.
+// Example: 1 bag × 26 kg = 26 kg stock required.
+const packageSize =
+  product.sale_type === "bag"
+    ? Number(product.package_size || 1)
+    : 1;
+
+const requiredStock = qty * packageSize;
+
+if (Number(product.stock_qty) < requiredStock) {
+  const available = Math.floor(
+    Number(product.stock_qty) / packageSize
+  );
+
+  const availableText =
+    product.sale_type === "bag"
+      ? `${available} bag${available === 1 ? "" : "s"}`
+      : `${product.stock_qty} ${product.unit}`;
+
+  return res.status(409).json({
+    error: `Only ${availableText} of ${product.name} available.`
+  });
+}
     const unitPrice = priceMode === "wholesale" ? product.wholesale_price : product.retail_price;
-    orderItems.push({
-      productId: product.id,
-      name: product.name,
-      unit: product.unit,
-      qty,
-      unitPrice,
-      lineTotal: unitPrice * qty
-    });
+   orderItems.push({
+  productId: product.id,
+  name: product.name,
+  unit: product.unit,
+  saleType: product.sale_type || "unit",
+  packageSize: packageSize,
+  qty,
+  unitPrice,
+  lineTotal: unitPrice * qty
+});
     total += unitPrice * qty;
-    stockUpdates.push({ id: product.id, newQty: Number(product.stock_qty) - qty });
+   const stockToDeduct = qty * packageSize;
+
+stockUpdates.push({
+  id: product.id,
+  newQty: Number(product.stock_qty) - stockToDeduct
+});
   }
 
   // Deduct stock for every item now that all lines are validated.

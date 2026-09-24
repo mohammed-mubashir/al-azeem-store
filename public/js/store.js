@@ -218,8 +218,16 @@ if (document.getElementById("productGrid")) {
     items.forEach((p) => {
       const card = document.createElement("div");
       card.className = "product-card";
-      const out = p.stockQty <= 0;
-      const low = !out && p.stockQty <= p.lowStockThreshold;
+      const isBag = p.saleType === "bag";
+const packageSize = isBag ? Number(p.packageSize || 1) : 1;
+const availableQty = isBag
+  ? Math.floor(p.stockQty / packageSize)
+  : p.stockQty;
+
+const displayUnit = isBag ? "bag" : p.unit;
+
+const out = availableQty <= 0;
+const low = !out && p.stockQty <= p.lowStockThreshold;
       card.innerHTML = `
         <div class="product-thumb">
           ${p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : `🧺`}
@@ -228,10 +236,15 @@ if (document.getElementById("productGrid")) {
         <div class="product-body">
           <span class="product-cat">${p.category}</span>
           <div class="product-name">${p.name}</div>
-          <div class="product-unit">per ${p.unit}</div>
+          <div class="product-unit">
+  ${isBag ? `${packageSize} ${p.unit} bag` : `per ${p.unit}`}
+</div>
           <div class="product-foot">
-            <div class="price" id="price-${p.id}">${money(p.wholesalePrice || p.retailPrice)}<br><small>pice / ${p.unit}</small></div>
-               ${p.wholesalePrice ? `<div style="font-size:1em; margin-top:2px;"><span style="text-decoration:line-through;">${money(p.retailPrice)}</span> <small>retail / ${p.unit}</small></div>` : ''}
+            <div class="price" id="price-${p.id}">
+  ${money(p.wholesalePrice || p.retailPrice)}<br>
+  <small>price / ${displayUnit}</small>
+</div>
+               ${p.wholesalePrice ? `<div style="font-size:1em; margin-top:2px;"><span style="text-decoration:line-through;">${money(p.retailPrice)}</span> <small>retail / ${displayUnit}</small></div>` : ''}
           </div>
           <div class="product-foot" style="margin-top:6px;">
           
@@ -249,11 +262,22 @@ if (document.getElementById("productGrid")) {
         qtyVal.textContent = Math.max(1, Number(qtyVal.textContent) - 1);
       });
       card.querySelector(".qty-plus").addEventListener("click", () => {
-        qtyVal.textContent = Math.min(p.stockQty, Number(qtyVal.textContent) + 1);
-      });
+  const maxQty = p.saleType === "bag"
+    ? Math.floor(p.stockQty / Number(p.packageSize || 1))
+    : p.stockQty;
+
+  qtyVal.textContent = Math.min(
+    maxQty,
+    Number(qtyVal.textContent) + 1
+  );
+});
       
      card.querySelector(".add-btn").addEventListener("click", () => {
-  addToCart(p, Number(qtyVal.textContent), 1);
+  const packSize = p.saleType === "bag"
+  ? Number(p.packageSize || 1)
+  : 1;
+
+addToCart(p, Number(qtyVal.textContent), packSize);
   qtyVal.textContent = 1;
 });
       grid.appendChild(card);
