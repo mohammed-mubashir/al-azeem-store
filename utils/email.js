@@ -27,10 +27,10 @@ async function sendConfirmationEmail(toEmail, name, token) {
   await resend.emails.send({
     from: getFromAddress(),
     to: toEmail,
-    subject: "Confirm your email — AL AZEEM Kirana & General Store",
+    subject: "Confirm your email — AL AZEEM TRADERS",
     html: `
       <p>Hi ${name},</p>
-      <p>Thanks for creating an account with AL AZEEM Kirana &amp; General Store. Please confirm your email address to activate your account:</p>
+      <p>Thanks for creating an account with AL AZEEM WHOLESALE · RETAIL. Please confirm your email address to activate your account:</p>
       <p><a href="${link}">Confirm my email</a></p>
       <p>If you didn't create this account, you can ignore this email.</p>
     `
@@ -47,7 +47,7 @@ async function sendPasswordResetEmail(toEmail, name, token) {
   await resend.emails.send({
     from: getFromAddress(),
     to: toEmail,
-    subject: "Reset your password — AL AZEEM Kirana & General Store",
+    subject: "Reset your password — AL AZEEM TRADERS",
     html: `
       <p>Hi ${name},</p>
       <p>We received a request to reset your password. This link is valid for 1 hour:</p>
@@ -69,7 +69,7 @@ async function sendOrderConfirmationEmail(toEmail, name, order) {
   await resend.emails.send({
     from: getFromAddress(),
     to: toEmail,
-    subject: `Order Confirmed — AL AZEEM Kirana & General Store (#${order.id})`,
+    subject: `Order Confirmed — AL AZEEM TRADERS (#${order.id})`,
     html: `
       <p>Hi ${name},</p>
       <p>Thank you for your order! Here's a summary:</p>
