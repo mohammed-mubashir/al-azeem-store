@@ -1,4 +1,4 @@
--- AL AZEEM KIRANA AND GENERAL STORE — Supabase database schema
+-- AL AZEEM TRADERS — Supabase database schema
 -- Run this once in the Supabase SQL Editor (Dashboard → SQL Editor → New query → paste → Run)
 
 create table if not exists admins (

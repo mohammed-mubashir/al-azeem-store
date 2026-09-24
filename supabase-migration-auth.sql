@@ -1,4 +1,4 @@
--- AL AZEEM KIRANA AND GENERAL STORE — Auth upgrade migration
+-- AL AZEEM TRADERS — Auth upgrade migration
 -- Adds email login, Google sign-in, email verification, and forgot-password support.
 -- Run this once in the Supabase SQL Editor (safe to run even if some columns already exist).
 

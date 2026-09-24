@@ -4,7 +4,7 @@
   "engines": {
     "node": "22.x"
   },
-  "description": "AL AZEEM KIRANA AND GENERAL STORE - wholesale & retail online store with admin panel",
+  "description": "AL AZEEM TRADERS - wholesale & retail online store with admin panel",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

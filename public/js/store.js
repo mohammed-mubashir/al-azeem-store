@@ -502,7 +502,7 @@ const deliveryAddress = houseNumber ? `${houseNumber}, ${rawAddress}` : rawAddre
           amount: payData.amount,
           currency: payData.currency,
           order_id: payData.razorpayOrderId,
-          name: "AL AZEEM KIRANA AND GENERAL STORE",
+          name: "AL AZEEM TRADERS",
           description: `Order #${order.id}`,
           theme: { color: "#1F4D3A" },
           handler: async function (response) {

@@ -36,7 +36,7 @@ app.use("/api/feedback", feedbackRoutes);
 
 app.get("/api/store-info", (req, res) => {
   res.json({
-    name: process.env.STORE_NAME || "AL AZEEM KIRANA AND GENERAL STORE",
+    name: process.env.STORE_NAME || "AL AZEEM TRADERS",
     phone: process.env.STORE_PHONE || ""
   });
 });
@@ -52,5 +52,5 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`AL AZEEM KIRANA AND GENERAL STORE server running on port ${PORT}`);
+  console.log(`AL AZEEM TRADERS server running on port ${PORT}`);
 });

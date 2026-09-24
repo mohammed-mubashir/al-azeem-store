@@ -1,16 +1,16 @@
-# AL AZEEM KIRANA AND GENERAL STORE
+# AL AZEEM TRADERS
 
 ### Wholesale · Retail · Online Ordering
 
-A full-stack e-commerce platform developed for AL AZEEM KIRANA AND GENERAL STORE, allowing customers to browse products, place orders, and make payments while the store owner manages products, inventory, and orders through an admin dashboard.
+A full-stack e-commerce platform developed for AL AZEEM TRADERS, allowing customers to browse products, place orders, and make payments while the store owner manages products, inventory, and orders through an admin dashboard.
 
 ## 🌐 Live Demo
 
-[Visit AL AZEEM KIRANA AND GENERAL STORE](https://al-azeem-store.vercel.app/)
+[Visit AL AZEEM TRADERS](https://al-azeem-store.vercel.app/)
 
 ## 📌 About the Project
 
-AL AZEEM KIRANA AND GENERAL STORE is a complete online shopping platform designed for a wholesale and retail grocery business.
+AL AZEEM TRADERS is a complete online shopping platform designed for a wholesale and retail grocery business.
 
 The application includes a customer-facing store, secure authentication, product management, inventory tracking, order management, and cloud database integration.
 
