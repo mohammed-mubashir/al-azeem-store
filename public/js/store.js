@@ -284,29 +284,34 @@ addToCart(p, Number(qtyVal.textContent), packSize);
     });
   }
 
-  function addToCart(product, qty, packSize = 1) {
-    const cart = getCart();
-   const line = cart.find((l) => l.productId === product.id && l.packSize === packSize);
-if (line) {
+function addToCart(product, qty, packSize = 1) {
+  const cart = getCart();
+  const line = cart.find(
+    (l) => l.productId === product.id && l.packSize === packSize
+  );
+
   const maxPacks = Math.floor(product.stockQty / packSize);
-  line.qty = Math.min(maxPacks, line.qty + qty);
-} else {
-  const maxPacks = Math.floor(product.stockQty / packSize);
-  cart.push({
-    productId: product.id,
-    name: product.name,
-    unit: product.unit,
-    packSize: packSize,
-    price: (product.wholesalePrice || product.retailPrice) * packSize,
-    qty: Math.min(qty, maxPacks),
-    maxStock: maxPacks
-  });
-}
-    setCart(cart);
-    updateCartBadge();
-    openCart();
-    showToast(`${product.name} added to cart`);
+
+  if (line) {
+    line.qty = Math.min(maxPacks, line.qty + qty);
+  } else {
+    cart.push({
+      productId: product.id,
+      name: product.name,
+      unit: product.unit,
+      packSize: packSize,
+      price: product.wholesalePrice || product.retailPrice,
+      qty: Math.min(qty, maxPacks),
+      maxStock: maxPacks
+    });
   }
+
+  setCart(cart);
+  updateCartBadge();
+  openCart();
+  showToast(`${product.name} added to cart`);
+}
+
   let locationMap, locationMarker;
 
 function setupLocationButton() {
