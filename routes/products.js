@@ -126,6 +126,11 @@ router.post("/", requireAdmin, upload.single("image"), async (req, res) => {
     if (error) return res.status(500).json({ error: "Could not update stock." });
     return res.status(200).json({ message: `Added ${qtyToAdd} ${unit} to existing stock.`, product: mapProduct(updated) });
   }
+  
+const finalSaleType = req.body.saleType || "unit";
+const finalPackageSize = req.body.packageSize
+  ? Number(req.body.packageSize)
+  : 1;
 
   const { data: created, error } = await supabase
     .from("products")
