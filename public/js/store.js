@@ -995,37 +995,3 @@ if (data.success) {
   });
 }
 
-// =====================================================
-// POLICY PAGE BACK LINK
-// =====================================================
-
-const policyBackLink = document.getElementById("policyBackLink");
-
-if (policyBackLink) {
-  policyBackLink.addEventListener("click", async (e) => {
-    e.preventDefault();
-
-    const token = getToken();
-
-    if (!token) {
-      window.location.href = "/agree.html";
-      return;
-    }
-
-    try {
-  const profile = await api("/auth/customer/profile");
-
-  const acceptedAt =
-    profile?.policiesAcceptedAt ||
-    localStorage.getItem("policiesAcceptedAt");
-
-  if (acceptedAt) {
-    window.location.href = "/";
-  } else {
-    window.location.href = "/agree.html";
-  }
-} catch (err) {
-  window.location.href = "/agree.html";
-}
-  });
-}
