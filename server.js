@@ -10,6 +10,7 @@ const orderRoutes = require("./routes/orders");
 const paymentRoutes = require("./routes/payment");
 const dashboardRoutes = require("./routes/dashboard");
 const feedbackRoutes = require("./routes/feedback");
+const bulkOrderRoutes = require("./routes/bulkOrder");
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/bulk-order", bulkOrderRoutes);
 
 app.get("/api/store-info", (req, res) => {
   res.json({

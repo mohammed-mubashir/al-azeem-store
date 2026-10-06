@@ -30,6 +30,11 @@
   <button id="clearSearchBtn" type="button" aria-label="Clear search">✕</button>
   <button id="searchBtn" type="button" aria-label="Search">🔍</button>
 </div>
+
+<button id="bulkAssistantBtn" class="bulk-assistant-btn" type="button">
+  🤖 Bulk Order
+</button>
+
     <div class="topbar-actions">
       <button class="icon-btn" id="ordersBtn">📦 My Orders</button>
       <button class="icon-btn" id="accountBtn">👤 <span id="accountLabel">Login</span></button>
@@ -202,6 +207,65 @@
   </div>
 
 </footer>
+
+<!-- BULK ORDER ASSISTANT -->
+
+<div id="bulkAssistantOverlay" class="bulk-assistant-overlay">
+
+  <div class="bulk-assistant-box">
+
+    <div class="bulk-assistant-header">
+      <div>
+        <div class="bulk-assistant-title">
+          🤖 Bulk Order Assistant
+        </div>
+
+        <div class="bulk-assistant-subtitle">
+          Plan groceries for your function or bulk order
+        </div>
+      </div>
+
+      <button
+        id="closeBulkAssistant"
+        class="bulk-assistant-close"
+        type="button"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="bulk-assistant-body">
+
+      <p>
+        How many people are you planning for?
+      </p>
+
+      <input
+        id="bulkPeopleInput"
+        type="number"
+        min="1"
+        placeholder="Example: 500"
+      >
+
+      <button
+        id="bulkCalculateBtn"
+        type="button"
+        class="bulk-calculate-btn"
+      >
+        Calculate Grocery
+      </button>
+
+      <div id="bulkAssistantMsg"></div>
+
+      <div id="bulkResults"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- END BULK ORDER ASSISTANT -->
 <!-- Cart Drawer -->
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="cartDrawer">

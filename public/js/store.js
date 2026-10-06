@@ -167,6 +167,120 @@ if (document.getElementById("productGrid")) {
   const emptyState = document.getElementById("emptyState");
   const resultCount = document.getElementById("resultCount");
   const shopTitle = document.getElementById("shopTitle");
+    // ---- Bulk Order Assistant ----
+  const bulkAssistantBtn = document.getElementById("bulkAssistantBtn");
+  const bulkAssistantOverlay = document.getElementById("bulkAssistantOverlay");
+  const closeBulkAssistant = document.getElementById("closeBulkAssistant");
+
+  if (bulkAssistantBtn && bulkAssistantOverlay) {
+    bulkAssistantBtn.addEventListener("click", () => {
+      bulkAssistantOverlay.classList.add("open");
+    });
+  }
+
+  if (closeBulkAssistant && bulkAssistantOverlay) {
+    closeBulkAssistant.addEventListener("click", () => {
+      bulkAssistantOverlay.classList.remove("open");
+    });
+  }
+
+  if (bulkAssistantOverlay) {
+    bulkAssistantOverlay.addEventListener("click", (e) => {
+      if (e.target === bulkAssistantOverlay) {
+        bulkAssistantOverlay.classList.remove("open");
+      }
+    });
+  }
+
+    const bulkCalculateBtn = document.getElementById("bulkCalculateBtn");
+  const bulkPeopleInput = document.getElementById("bulkPeopleInput");
+  const bulkAssistantMsg = document.getElementById("bulkAssistantMsg");
+  const bulkResults = document.getElementById("bulkResults");
+
+  if (bulkCalculateBtn) {
+    bulkCalculateBtn.addEventListener("click", async () => {
+      const people = Number(bulkPeopleInput.value);
+
+      bulkAssistantMsg.textContent = "";
+      bulkResults.innerHTML = "";
+
+      if (!people || people <= 0) {
+        bulkAssistantMsg.textContent =
+          "Please enter a valid number of people.";
+        return;
+      }
+
+      bulkCalculateBtn.disabled = true;
+      bulkCalculateBtn.textContent = "Calculating...";
+
+      try {
+        const data = await api("/bulk-order/calculate", {
+          method: "POST",
+          body: JSON.stringify({ people })
+        });
+
+        bulkAssistantMsg.textContent =
+          `Recommended grocery list for ${people} people:`;
+
+        bulkResults.innerHTML = data.items.map((item) => {
+          const r = item.recommendation;
+
+          if (!r) {
+            return `
+              <div style="padding:10px 0;border-bottom:1px solid #eee;">
+                <strong>${item.romanName || item.itemName}</strong>
+                <div style="font-size:13px;color:#777;">
+                  ${item.requiredQuantity} ${item.unit}
+                </div>
+              </div>
+            `;
+          }
+
+          let quantityText = "";
+
+          if (r.saleType === "bag") {
+            quantityText =
+              `${r.bagsNeeded} bag${r.bagsNeeded === 1 ? "" : "s"}`;
+          } else if (r.packagesNeeded) {
+            quantityText =
+              `${r.packagesNeeded} pack${r.packagesNeeded === 1 ? "" : "s"}`;
+          } else {
+            quantityText =
+              `${r.quantity} ${item.unit}`;
+          }
+
+          return `
+            <div style="padding:12px 0;border-bottom:1px solid #eee;">
+              <div style="font-weight:600;">
+                ${r.productName}
+              </div>
+
+              <div style="font-size:13px;color:#666;margin-top:3px;">
+                Required: ${item.requiredQuantity} ${item.unit}
+              </div>
+
+              <div style="font-size:13px;margin-top:3px;">
+                Buy: <strong>${quantityText}</strong>
+              </div>
+
+              <div style="font-size:13px;margin-top:3px;">
+                ${r.stockSufficient
+                  ? "✅ Available in stock"
+                  : "⚠️ Not enough stock"}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+      } catch (err) {
+        bulkAssistantMsg.textContent =
+          err.message || "Could not calculate the order.";
+      } finally {
+        bulkCalculateBtn.disabled = false;
+        bulkCalculateBtn.textContent = "Calculate Grocery";
+      }
+    });
+  }
 
   function renderAccount() {
     const label = document.getElementById("accountLabel");

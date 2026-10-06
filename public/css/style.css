@@ -1629,3 +1629,119 @@ html {
   color: #8a6500;
   border-color: #f1dfaa;
 }
+
+/* =====================================================
+   BULK ORDER ASSISTANT
+   ===================================================== */
+
+.bulk-assistant-btn {
+  border: 1px solid #1F4D3A;
+  background: #1F4D3A;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s ease;
+}
+
+.bulk-assistant-btn:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+.bulk-assistant-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.bulk-assistant-overlay.open {
+  display: flex;
+}
+
+.bulk-assistant-box {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.bulk-assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.bulk-assistant-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1F4D3A;
+}
+
+.bulk-assistant-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #777;
+}
+
+.bulk-assistant-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+
+.bulk-assistant-body {
+  padding: 20px;
+}
+
+.bulk-assistant-body p {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+#bulkPeopleInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.bulk-calculate-btn {
+  width: 100%;
+  border: none;
+  background: #C98A2C;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bulk-calculate-btn:hover {
+  opacity: 0.9;
+}
+
+#bulkAssistantMsg {
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+#bulkResults {
+  margin-top: 16px;
+}
