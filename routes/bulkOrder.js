@@ -368,7 +368,7 @@ products that are not part of the store catalogue.
     console.error("AI bulk order understanding error:", err);
 
     res.status(500).json({
-      error: "Could not understand your request."
+      error:  err.message || "Could not understand your request."
     });
   }
 });
