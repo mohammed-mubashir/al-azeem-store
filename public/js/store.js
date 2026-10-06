@@ -222,51 +222,23 @@ if (document.getElementById("productGrid")) {
         bulkAssistantMsg.textContent =
           `Recommended grocery list for ${people} people:`;
 
-        bulkResults.innerHTML = data.items.map((item) => {
+                bulkResults.innerHTML = data.items.map((item) => {
           const r = item.recommendation;
 
-          if (!r) {
-            return `
-              <div style="padding:10px 0;border-bottom:1px solid #eee;">
-                <strong>${item.romanName || item.itemName}</strong>
-                <div style="font-size:13px;color:#777;">
-                  ${item.requiredQuantity} ${item.unit}
-                </div>
-              </div>
-            `;
-          }
-
-          let quantityText = "";
-
-          if (r.saleType === "bag") {
-            quantityText =
-              `${r.bagsNeeded} bag${r.bagsNeeded === 1 ? "" : "s"}`;
-          } else if (r.packagesNeeded) {
-            quantityText =
-              `${r.packagesNeeded} pack${r.packagesNeeded === 1 ? "" : "s"}`;
-          } else {
-            quantityText =
-              `${r.quantity} ${item.unit}`;
-          }
+          const displayName =
+            r?.productName || item.romanName || item.itemName;
 
           return `
             <div style="padding:12px 0;border-bottom:1px solid #eee;">
               <div style="font-weight:600;">
-                ${r.productName}
+                ${displayName}
               </div>
 
-              <div style="font-size:13px;color:#666;margin-top:3px;">
-                Required: ${item.requiredQuantity} ${item.unit}
-              </div>
-
-              <div style="font-size:13px;margin-top:3px;">
-                Buy: <strong>${quantityText}</strong>
-              </div>
-
-              <div style="font-size:13px;margin-top:3px;">
-                ${r.stockSufficient
-                  ? "✅ Available in stock"
-                  : "⚠️ Not enough stock"}
+              <div style="font-size:13px;color:#666;margin-top:4px;">
+                Required:
+                <strong>
+                  ${item.requiredQuantity} ${item.unit}
+                </strong>
               </div>
             </div>
           `;

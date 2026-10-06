@@ -3,6 +3,34 @@ const supabase = require("../db/supabase");
 
 const router = express.Router();
 
+function convertQuantity(quantity, fromUnit, toUnit) {
+  const from = String(fromUnit || "").toLowerCase().trim();
+  const to = String(toUnit || "").toLowerCase().trim();
+
+  if (from === to) return quantity;
+
+  // grams ↔ kilograms
+  if (from === "g" && to === "kg") {
+    return quantity / 1000;
+  }
+
+  if (from === "kg" && to === "g") {
+    return quantity * 1000;
+  }
+
+  // millilitres ↔ litres
+  if (from === "ml" && to === "l") {
+    return quantity / 1000;
+  }
+
+  if (from === "l" && to === "ml") {
+    return quantity * 1000;
+  }
+
+  // If units are unknown, leave unchanged.
+  return quantity;
+}
+
 router.post("/calculate", async (req, res) => {
   try {
     const people = Number(req.body.people);
@@ -63,6 +91,8 @@ router.post("/calculate", async (req, res) => {
     const multiplier = people / 100;
 
     const items = rules.map((rule) => {
+      // This is the actual quantity the customer needs.
+      // Keep this in the rule's original unit.
       const requiredQuantity = Number(
         (rule.base_quantity * multiplier).toFixed(2)
       );
@@ -104,19 +134,28 @@ router.post("/calculate", async (req, res) => {
         const stockQty = Number(product.stock_qty || 0);
         const packageSize = Number(product.package_size || 1);
 
-        // If an approved mapping exists, use its actual quantity
-        // instead of assuming package_size equals the required unit.
+        // =====================================================
+        // MAPPED PRODUCT
+        // =====================================================
         if (mapping) {
           const packageQuantity = Number(mapping.package_quantity);
+          const packageUnit = mapping.package_unit;
 
-          const packagesNeeded = Math.ceil(
-            requiredQuantity / packageQuantity
+          // Convert the required quantity into the same unit
+          // used by the package mapping before calculating packs.
+          const requiredInPackageUnit = convertQuantity(
+            requiredQuantity,
+            rule.unit,
+            packageUnit
           );
 
-          const maxPackagesAvailable =
-            product.sale_type === "bag"
-              ? Math.floor(stockQty / packageSize)
-              : Math.floor(stockQty / packageSize);
+          const packagesNeeded = Math.ceil(
+            requiredInPackageUnit / packageQuantity
+          );
+
+          const maxPackagesAvailable = Math.floor(
+            stockQty / packageSize
+          );
 
           recommendation = {
             productId: product.id,
@@ -124,21 +163,45 @@ router.post("/calculate", async (req, res) => {
             saleType: product.sale_type,
             packageSize,
             packageQuantity,
-            packageUnit: mapping.package_unit,
+            packageUnit,
+
+            // Customer's actual requirement stays unchanged.
+            requiredQuantity,
+            requiredUnit: rule.unit,
+
+            // Package information is kept for future cart handling.
             packagesNeeded,
             maxPackagesAvailable,
+
             totalQuantity: Number(
               (packagesNeeded * packageQuantity).toFixed(2)
             ),
-            stockSufficient: maxPackagesAvailable >= packagesNeeded,
+
+            stockSufficient:
+              maxPackagesAvailable >= packagesNeeded,
+
             price: Number(
-              product.wholesale_price || product.retail_price || 0
+              product.wholesale_price ||
+              product.retail_price ||
+              0
             ),
+
             imageUrl: product.image_url || null
           };
+
+        // =====================================================
+        // BAG PRODUCT WITHOUT MAPPING
+        // =====================================================
         } else if (product.sale_type === "bag") {
+
+          const requiredInPackageUnit = convertQuantity(
+            requiredQuantity,
+            rule.unit,
+            product.unit
+          );
+
           const bagsNeeded = Math.ceil(
-            requiredQuantity / packageSize
+            requiredInPackageUnit / packageSize
           );
 
           const maxBagsAvailable = Math.floor(
@@ -150,28 +213,56 @@ router.post("/calculate", async (req, res) => {
             productName: product.name,
             saleType: "bag",
             packageSize,
+
+            // Keep customer's actual requirement.
+            requiredQuantity,
+            requiredUnit: rule.unit,
+
+            // Package information for future use.
             bagsNeeded,
             maxBagsAvailable,
+
             totalQuantity: Number(
               (bagsNeeded * packageSize).toFixed(2)
             ),
-            stockSufficient: maxBagsAvailable >= bagsNeeded,
+
+            stockSufficient:
+              maxBagsAvailable >= bagsNeeded,
+
             price: Number(
-              product.wholesale_price || product.retail_price || 0
+              product.wholesale_price ||
+              product.retail_price ||
+              0
             ),
+
             imageUrl: product.image_url || null
           };
+
+        // =====================================================
+        // NORMAL UNIT PRODUCT
+        // =====================================================
         } else {
+
           recommendation = {
             productId: product.id,
             productName: product.name,
             saleType: "unit",
             packageSize,
+
+            // Exact quantity required by the customer.
             quantity: requiredQuantity,
-            stockSufficient: stockQty >= requiredQuantity,
+            requiredQuantity,
+            requiredUnit: rule.unit,
+
+            stockSufficient:
+              stockQty >= requiredQuantity,
+
             price: Number(
-              product.wholesale_price || product.retail_price || 0
+              product.wholesale_price ||
+              product.retail_price ||
+              0
             ),
+
             imageUrl: product.image_url || null
           };
         }
@@ -180,8 +271,12 @@ router.post("/calculate", async (req, res) => {
       return {
         itemName: rule.item_name,
         romanName: rule.roman_name,
+
+        // This is what the customer actually needs.
         requiredQuantity,
+
         unit: rule.unit,
+
         recommendation
       };
     });
@@ -190,6 +285,7 @@ router.post("/calculate", async (req, res) => {
       people,
       items
     });
+
   } catch (err) {
     console.error("Bulk order calculation error:", err);
 
