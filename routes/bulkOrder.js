@@ -295,4 +295,44 @@ router.post("/calculate", async (req, res) => {
   }
 });
 
+router.post("/understand", async (req, res) => {
+  try {
+    const message = String(req.body.message || "").trim();
+
+    if (!message) {
+      return res.status(400).json({
+        error: "Please enter your bulk order requirement."
+      });
+    }
+
+    const match = message.match(/\b(\d+)\s*(?:people|persons|log|logo|pax)?\b/i);
+
+    if (!match) {
+      return res.status(400).json({
+        error: "Please mention the number of people."
+      });
+    }
+
+    const people = Number(match[1]);
+
+    if (!people || people <= 0) {
+      return res.status(400).json({
+        error: "Please provide a valid number of people."
+      });
+    }
+
+    res.json({
+      people,
+      message
+    });
+
+  } catch (err) {
+    console.error("Bulk order understanding error:", err);
+
+    res.status(500).json({
+      error: "Could not understand the request."
+    });
+  }
+});
+
 module.exports = router;

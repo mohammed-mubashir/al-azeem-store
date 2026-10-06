@@ -169,91 +169,115 @@ if (document.getElementById("productGrid")) {
   const shopTitle = document.getElementById("shopTitle");
     // ---- Bulk Order Assistant ----
   const bulkAssistantBtn = document.getElementById("bulkAssistantBtn");
-  const bulkAssistantOverlay = document.getElementById("bulkAssistantOverlay");
-  const closeBulkAssistant = document.getElementById("closeBulkAssistant");
+const bulkAssistantOverlay = document.getElementById("bulkAssistantOverlay");
+const closeBulkAssistant = document.getElementById("closeBulkAssistant");
 
-  if (bulkAssistantBtn && bulkAssistantOverlay) {
-    bulkAssistantBtn.addEventListener("click", () => {
-      bulkAssistantOverlay.classList.add("open");
-    });
-  }
+const bulkCalculateBtn = document.getElementById("bulkCalculateBtn");
+const bulkPeopleInput = document.getElementById("bulkPeopleInput");
+const bulkAssistantMsg = document.getElementById("bulkAssistantMsg");
+const bulkResults = document.getElementById("bulkResults");
 
-  if (closeBulkAssistant && bulkAssistantOverlay) {
-    closeBulkAssistant.addEventListener("click", () => {
+if (bulkAssistantBtn && bulkAssistantOverlay) {
+  bulkAssistantBtn.addEventListener("click", () => {
+    // Refresh assistant every time it opens
+    bulkPeopleInput.value = "";
+    bulkAssistantMsg.textContent = "";
+    bulkResults.innerHTML = "";
+
+    bulkAssistantOverlay.classList.add("open");
+    document.body.classList.add("bulk-assistant-open");
+  });
+}
+
+if (closeBulkAssistant && bulkAssistantOverlay) {
+  closeBulkAssistant.addEventListener("click", () => {
+    bulkAssistantOverlay.classList.remove("open");
+    document.body.classList.remove("bulk-assistant-open");
+
+    // Clear previous search
+    bulkPeopleInput.value = "";
+    bulkAssistantMsg.textContent = "";
+    bulkResults.innerHTML = "";
+  });
+}
+
+if (bulkAssistantOverlay) {
+  bulkAssistantOverlay.addEventListener("click", (e) => {
+    if (e.target === bulkAssistantOverlay) {
       bulkAssistantOverlay.classList.remove("open");
-    });
-  }
+      document.body.classList.remove("bulk-assistant-open");
 
-  if (bulkAssistantOverlay) {
-    bulkAssistantOverlay.addEventListener("click", (e) => {
-      if (e.target === bulkAssistantOverlay) {
-        bulkAssistantOverlay.classList.remove("open");
-      }
-    });
-  }
-
-    const bulkCalculateBtn = document.getElementById("bulkCalculateBtn");
-  const bulkPeopleInput = document.getElementById("bulkPeopleInput");
-  const bulkAssistantMsg = document.getElementById("bulkAssistantMsg");
-  const bulkResults = document.getElementById("bulkResults");
-
-  if (bulkCalculateBtn) {
-    bulkCalculateBtn.addEventListener("click", async () => {
-      const people = Number(bulkPeopleInput.value);
-
+      // Clear previous search
+      bulkPeopleInput.value = "";
       bulkAssistantMsg.textContent = "";
       bulkResults.innerHTML = "";
+    }
+  });
+}
 
-      if (!people || people <= 0) {
-        bulkAssistantMsg.textContent =
-          "Please enter a valid number of people.";
-        return;
-      }
+if (bulkCalculateBtn) {
+  bulkCalculateBtn.addEventListener("click", async () => {
+    const message = bulkPeopleInput.value.trim();
 
-      bulkCalculateBtn.disabled = true;
-      bulkCalculateBtn.textContent = "Calculating...";
+bulkAssistantMsg.textContent = "";
+bulkResults.innerHTML = "";
 
-      try {
-        const data = await api("/bulk-order/calculate", {
-          method: "POST",
-          body: JSON.stringify({ people })
-        });
+if (!message) {
+  bulkAssistantMsg.textContent =
+    "Please enter your bulk order requirement.";
+  return;
+}
 
-        bulkAssistantMsg.textContent =
-          `Recommended grocery list for ${people} people:`;
+    bulkCalculateBtn.disabled = true;
+    bulkCalculateBtn.textContent = "Calculating...";
 
-                bulkResults.innerHTML = data.items.map((item) => {
-          const r = item.recommendation;
+    try {
+      const understood = await api("/bulk-order/understand", {
+  method: "POST",
+  body: JSON.stringify({ message })
+});
 
-          const displayName =
-            r?.productName || item.romanName || item.itemName;
+const people = understood.people;
 
-          return `
-            <div style="padding:12px 0;border-bottom:1px solid #eee;">
-              <div style="font-weight:600;">
-                ${displayName}
-              </div>
+const data = await api("/bulk-order/calculate", {
+  method: "POST",
+  body: JSON.stringify({ people })
+});
 
-              <div style="font-size:13px;color:#666;margin-top:4px;">
-                Required:
-                <strong>
-                  ${item.requiredQuantity} ${item.unit}
-                </strong>
-              </div>
+      bulkAssistantMsg.textContent =
+        `Recommended grocery list for ${people} people:`;
+
+      bulkResults.innerHTML = data.items.map((item) => {
+        const r = item.recommendation;
+
+        const displayName =
+          r?.productName || item.romanName || item.itemName;
+
+        return `
+          <div style="padding:12px 0;border-bottom:1px solid #eee;">
+            <div style="font-weight:600;">
+              ${displayName}
             </div>
-          `;
-        }).join("");
 
-      } catch (err) {
-        bulkAssistantMsg.textContent =
-          err.message || "Could not calculate the order.";
-      } finally {
-        bulkCalculateBtn.disabled = false;
-        bulkCalculateBtn.textContent = "Calculate Grocery";
-      }
-    });
-  }
+            <div style="font-size:13px;color:#666;margin-top:4px;">
+              Required:
+              <strong>
+                ${item.requiredQuantity} ${item.unit}
+              </strong>
+            </div>
+          </div>
+        `;
+      }).join("");
 
+    } catch (err) {
+      bulkAssistantMsg.textContent =
+        err.message || "Could not calculate the order.";
+    } finally {
+      bulkCalculateBtn.disabled = false;
+      bulkCalculateBtn.textContent = "Calculate Grocery";
+    }
+  });
+}
   function renderAccount() {
     const label = document.getElementById("accountLabel");
     label.textContent = getToken() ? getCustomerName().split(" ")[0] : "Login";

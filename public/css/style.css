@@ -1745,3 +1745,15 @@ html {
 #bulkResults {
   margin-top: 16px;
 }
+
+body.bulk-assistant-open {
+  overflow: hidden;
+}
+
+.bulk-assistant-overlay {
+  overscroll-behavior: contain;
+}
+
+.bulk-assistant-box {
+  overscroll-behavior: contain;
+}
