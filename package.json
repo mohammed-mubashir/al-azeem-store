@@ -2,7 +2,7 @@
   "name": "al-azeem-traders",
   "version": "1.0.0",
   "engines": {
-    "node": "22.x"
+    "node": ">=18.0.0"
   },
   "description": "AL AZEEM TRADERS - wholesale & retail online store with admin panel",
   "main": "server.js",
@@ -11,21 +11,19 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "@supabase/supabase-js": "^2.45.4",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.14.1",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "openai": "^7.28.0",
     "razorpay": "^2.9.4",
-    "@supabase/supabase-js": "^2.45.4",
-    "resend": "^4.0.1",
-    "google-auth-library": "^9.14.1"
+    "resend": "^4.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }
