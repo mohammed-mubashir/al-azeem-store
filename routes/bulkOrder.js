@@ -1,12 +1,8 @@
 const express = require("express");
-const OpenAI = require("openai");
 const supabase = require("../db/supabase");
 
 const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
 function convertQuantity(quantity, fromUnit, toUnit) {
   const from = String(fromUnit || "").toLowerCase().trim();
   const to = String(toUnit || "").toLowerCase().trim();
@@ -309,66 +305,55 @@ router.post("/understand", async (req, res) => {
       });
     }
 
-    const response = await openai.responses.create({
-      model: "gpt-5-mini",
-      input: [
-        {
-          role: "system",
-          content: `
-You are the bulk order understanding assistant for AL AZEEM TRADERS,
-a wholesale and retail grocery store.
+    // Extract the number of people from English or Roman Hindi
+    const patterns = [
+      /\b(\d[\d,]*)\s*(?:people|persons|pax)\b/i,
+      /\b(\d[\d,]*)\s*(?:logon|logo|log|lोग)\b/i,
+      /\b(\d[\d,]*)\s*(?:people|persons|logon|log|pax)?\b/i
+    ];
 
-Your job is ONLY to understand the customer's request.
+    let people = null;
 
-Extract:
-1. people = number of people, if mentioned
-2. purpose = what the customer wants to prepare or order
-3. type = "bulk_grocery" for bulk/function grocery requests
+    for (const pattern of patterns) {
+      const match = message.match(pattern);
 
-Return ONLY valid JSON in this exact format:
+      if (match) {
+        people = Number(match[1].replace(/,/g, ""));
+        break;
+      }
+    }
 
-{
-  "people": number,
-  "purpose": "string",
-  "type": "bulk_grocery"
-}
-
-Do not calculate grocery quantities.
-Do not invent quantities.
-Do not recommend products.
-Do not include markdown.
-
-The store sells grocery items, rice, oil, dal, spices, ghee,
-salt and similar grocery products. Do not suggest meat or other
-products that are not part of the store catalogue.
-          `
-        },
-        {
-          role: "user",
-          content: message
-        }
-      ]
-    });
-
-    const result = JSON.parse(response.output_text);
-
-    if (!result.people || result.people <= 0) {
+    if (!people || people <= 0 || !Number.isSafeInteger(people)) {
       return res.status(400).json({
-        error: "Please mention how many people you are planning for."
+        error: "Please mention how many people you are planning for. Example: 300 logon ke liye biryani ka grocery chahiye."
       });
     }
 
-    res.json({
-      people: Number(result.people),
-      purpose: result.purpose || "bulk grocery",
-      type: result.type || "bulk_grocery"
+    const lowerMessage = message.toLowerCase();
+
+    let purpose = "bulk grocery";
+
+    if (lowerMessage.includes("biryani")) {
+      purpose = "biryani";
+    } else if (
+      lowerMessage.includes("function") ||
+      lowerMessage.includes("shaadi") ||
+      lowerMessage.includes("wedding")
+    ) {
+      purpose = "function grocery";
+    }
+
+    return res.json({
+      people,
+      purpose,
+      type: "bulk_grocery"
     });
 
   } catch (err) {
-    console.error("AI bulk order understanding error:", err);
+    console.error("Bulk order understanding error:", err);
 
-    res.status(500).json({
-      error:  err.message || "Could not understand your request."
+    return res.status(500).json({
+      error: "Could not understand your request."
     });
   }
 });
